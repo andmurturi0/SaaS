@@ -75,19 +75,22 @@ const removeFavorite = async (productId) => {
                             <div class="flex justify-between items-start">
                                 <div>
                                     <h4 class="font-black text-2xl text-white italic uppercase tracking-tighter leading-tight group-hover:text-white transition-colors">{{ product.name }}</h4>
-                                    <p class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mt-1">{{ product.brand?.name }}</p>
+                                    <p class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mt-1">{{ product.brands?.[0]?.name }}</p>
                                 </div>
-                                <span class="text-2xl font-black italic tracking-tighter text-white">€{{ Math.round(product.price) }}</span>
+                                <div class="flex flex-col items-end">
+                                    <span class="text-2xl font-black italic tracking-tighter text-white">€{{ Math.round(product.sale_price || product.price) }}</span>
+                                    <span v-if="product.sale_price" class="text-[10px] text-zinc-700 line-through font-bold">€{{ Math.round(product.price) }}</span>
+                                </div>
                             </div>
                         </div>
                     </Link>
                     
-                    <button 
-                        @click="cartStore.addItem(product.id)"
-                        class="w-full bg-white text-black py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs hover:bg-zinc-200 transition-all shadow-xl opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 duration-500 active:scale-95"
+                    <Link 
+                        :href="route('shop.show', product.id)"
+                        class="w-full bg-white text-black py-5 rounded-[1.5rem] flex items-center justify-center font-black uppercase tracking-widest text-xs hover:bg-admin-modern transition-all shadow-xl opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 duration-500 active:scale-95"
                     >
-                        Add to Cart
-                    </button>
+                        View Product
+                    </Link>
                 </div>
             </div>
         </div>

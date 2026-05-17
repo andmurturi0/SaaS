@@ -130,9 +130,9 @@ watch(isFilterDrawerOpen, (val) => {
                                     :key="brand.id"
                                     @click="activeFilters.brand = brand.name; applyFilters()"
                                     :class="activeFilters.brand === brand.name ? 'border-white bg-white/10 shadow-lg shadow-white/5' : 'border-white/5 hover:border-white/20'"
-                                    class="border p-4 rounded-2xl transition-all group aspect-square flex items-center justify-center"
+                                    class="border p-4 rounded-2xl transition-all group aspect-square flex items-center justify-center p-6"
                                 >
-                                    <img :src="brand.logo" class="h-6 w-full object-contain transition-all" :class="activeFilters.brand === brand.name ? 'opacity-100 grayscale-0' : 'opacity-40 grayscale group-hover:opacity-80'" />
+                                    <img :src="brand.logo" class="w-full h-full object-contain transition-all" :class="activeFilters.brand === brand.name ? 'opacity-100 grayscale-0' : 'opacity-40 grayscale group-hover:opacity-80'" />
                                 </button>
                             </div>
                             <button 
@@ -238,12 +238,12 @@ watch(isFilterDrawerOpen, (val) => {
 
                             <!-- Quick Action Area -->
                             <div class="mt-6 px-4">
-                                <button 
-                                    @click="cartStore.addItem(product.id)"
-                                    class="w-full bg-white text-black py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-admin-modern transition-all duration-300 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 shadow-2xl"
+                                <Link 
+                                    :href="route('shop.show', product.id)"
+                                    class="w-full bg-white text-black py-4 rounded-2xl flex items-center justify-center font-black uppercase text-[10px] tracking-[0.2em] hover:bg-admin-modern transition-all duration-300 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 shadow-2xl"
                                 >
-                                    Add To Bag
-                                </button>
+                                    Select Size
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -318,9 +318,9 @@ watch(isFilterDrawerOpen, (val) => {
                                     :key="brand.id"
                                     @click="activeFilters.brand = brand.name"
                                     :class="activeFilters.brand === brand.name ? 'bg-white/10 border-white' : 'bg-black/40 border-white/5'"
-                                    class="border p-6 rounded-2xl transition-all flex items-center justify-center"
+                                    class="border rounded-2xl transition-all flex items-center justify-center p-6 aspect-square"
                                 >
-                                    <img :src="brand.logo" class="h-6 object-contain" :class="activeFilters.brand === brand.name ? 'opacity-100 grayscale-0' : 'opacity-40 grayscale'" />
+                                    <img :src="brand.logo" class="h-6 w-full object-contain" :class="activeFilters.brand === brand.name ? 'opacity-100 grayscale-0' : 'opacity-40 grayscale'" />
                                 </button>
                             </div>
                         </div>

@@ -40,7 +40,7 @@ class InventoryController extends Controller
             'total_products' => Product::count(),
             'low_stock' => Product::where('stock', '>', 0)->where('stock', '<=', 10)->count(),
             'out_of_stock' => Product::where('stock', '<=', 0)->count(),
-            'total_value' => Product::sum(\DB::raw('price * stock'))
+            'total_value' => Product::sum(\DB::raw('COALESCE(sale_price, price) * stock'))
         ];
 
         return Inertia::render('Admin/Inventory/Index', [

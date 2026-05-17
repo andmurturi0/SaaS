@@ -125,14 +125,8 @@ const handleApplyCoupon = () => {
 
         <!-- Trust Badges -->
         <div class="mt-10">
-            <div class="flex items-center justify-center space-x-6 grayscale opacity-20 invert transition-opacity hover:opacity-40">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="h-4" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="h-6" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-4" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Apple_Pay_logo.svg" alt="Apple Pay" class="h-6" />
-            </div>
             <p class="text-center text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700 mt-6 leading-relaxed">
-                🔒 256-bit SSL Secure Checkout<br>
+                🔒 Secure Cash on Delivery<br>
                 Free 30-day returns on all orders
             </p>
         </div>

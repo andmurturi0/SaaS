@@ -55,94 +55,93 @@ onMounted(() => {
 
         <main>
             <!-- Hero Section -->
-            <section id="home" class="min-h-screen flex items-center justify-center pt-24 sm:pt-32 lg:pt-40 pb-12 lg:pb-20">
-                <div class="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12">
-                    <div v-if="heroProducts?.length > 0" class="bg-[#121212] rounded-[2.5rem] lg:rounded-[4rem] p-8 sm:p-12 lg:p-20 flex flex-col relative overflow-hidden min-h-[500px] lg:h-[750px] border border-white/5 shadow-2xl group">
+            <section id="home" class="min-h-[80vh] sm:min-h-screen flex items-center justify-center pt-28 sm:pt-36 lg:pt-44 pb-12 sm:pb-20">
+                <div class="w-full max-w-7xl mx-auto px-4 sm:px-8">
+                    <div v-if="heroProducts?.length > 0" class="bg-[#111111] rounded-[2.5rem] lg:rounded-[3.5rem] flex flex-col relative overflow-hidden h-[450px] sm:h-[600px] lg:h-[680px] border border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] group transition-all duration-700">
                         
-                        <!-- Top Bar Overlay -->
-                        <div class="flex justify-between items-start z-30 w-full mb-8 relative">
-                            <div class="flex flex-col gap-4">
-                                <template v-if="heroProducts[currentHeroIndex].brands?.length > 0">
-                                    <img :src="heroProducts[currentHeroIndex].brands[0].logo" class="h-6 sm:h-8 w-auto object-contain opacity-60 drop-shadow-2xl" />
-                                </template>
-                            </div>
+                        <!-- Header: Brand & Wishlist -->
+                        <div class="absolute top-8 left-8 sm:top-14 sm:left-14 z-30">
+                            <template v-if="heroProducts[currentHeroIndex].brands?.length > 0">
+                                <img :src="heroProducts[currentHeroIndex].brands[0].logo" class="h-6 sm:h-9 w-auto object-contain opacity-90 brightness-200" />
+                            </template>
+                        </div>
+
+                        <div class="absolute top-8 right-8 sm:top-14 sm:right-14 z-30">
                             <button 
                                 @click="toggleFavorite(heroProducts[currentHeroIndex])"
-                                :class="['p-3 rounded-full backdrop-blur-xl border border-white/10 transition-all duration-300', heroProducts[currentHeroIndex].is_favorited ? 'bg-rose-500 text-white shadow-lg' : 'bg-white/5 text-zinc-400 hover:text-white']"
+                                :class="['transition-all duration-500 hover:scale-110 active:scale-90', heroProducts[currentHeroIndex].is_favorited ? 'text-rose-500' : 'text-white']"
                             >
-                                <Heart class="w-5 h-5 sm:w-6 sm:h-6" :fill="heroProducts[currentHeroIndex].is_favorited ? 'currentColor' : 'none'" />
+                                <Heart class="w-7 h-7 sm:w-9 sm:h-9" :fill="heroProducts[currentHeroIndex].is_favorited ? 'currentColor' : 'none'" stroke-width="1.5" />
                             </button>
                         </div>
 
-                        <!-- Main Content Area -->
-                        <div class="flex-1 flex flex-col lg:flex-row items-center justify-center lg:justify-between relative gap-12 lg:gap-0">
-                            <!-- Left Info -->
-                            <div class="w-full lg:w-1/3 space-y-6 sm:space-y-8 z-20 text-center lg:text-left">
+                        <!-- Main Grid Layout -->
+                        <div class="relative h-full w-full grid grid-cols-1 lg:grid-cols-12 items-center px-8 sm:px-14 lg:px-20">
+                            
+                            <!-- Information Block -->
+                            <div class="lg:col-span-4 z-20 space-y-10 sm:space-y-12">
                                 <Transition name="fade-up" mode="out-in">
-                                    <div :key="currentHeroIndex" class="space-y-6">
-                                        <div class="inline-block bg-white/5 backdrop-blur-2xl border border-white/10 px-8 py-4 sm:px-12 sm:py-6 rounded-[2rem] shadow-2xl">
-                                            <span class="text-3xl sm:text-5xl font-black text-white tracking-tighter italic">
-                                                €{{ Math.round(heroProducts[currentHeroIndex].price) }}
-                                            </span>
-                                        </div>
-                                        
+                                    <div :key="currentHeroIndex" class="space-y-4">
+                                        <h3 class="text-6xl sm:text-7xl lg:text-8xl font-black text-white italic tracking-tighter leading-none">
+                                            €{{ Math.round(heroProducts[currentHeroIndex].price) }}
+                                        </h3>
                                         <div class="space-y-2">
-                                            <h2 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white uppercase italic tracking-tighter leading-none">
+                                            <h2 class="text-xl sm:text-2xl lg:text-3xl font-black text-white uppercase italic tracking-tight leading-tight">
                                                 {{ heroProducts[currentHeroIndex].title }}
                                             </h2>
-                                            <p class="text-zinc-500 text-[10px] sm:text-xs font-black uppercase tracking-[0.4em]">{{ heroProducts[currentHeroIndex].category }} Edition</p>
+                                            <p class="text-zinc-500 text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] opacity-60">
+                                                {{ heroProducts[currentHeroIndex].category }} Edition
+                                            </p>
                                         </div>
                                     </div>
                                 </Transition>
                             </div>
 
-                            <!-- Center: Image -->
-                            <div class="flex-1 flex justify-center items-center relative w-full h-full min-h-[300px] lg:min-h-0">
+                            <!-- Image Container -->
+                            <div class="lg:col-span-8 relative h-full flex items-center justify-center lg:justify-end">
+                                <!-- Background Glow -->
                                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <div class="w-[300px] h-[300px] lg:w-[600px] lg:h-[600px] bg-white/[0.02] rounded-full blur-[100px]"></div>
+                                    <div class="w-[300px] h-[300px] lg:w-[500px] lg:h-[500px] bg-white/[0.02] rounded-full blur-[100px]"></div>
                                 </div>
-                                
+
                                 <TransitionGroup name="hero-slide">
                                     <div 
                                         v-for="(product, index) in heroProducts" 
                                         :key="index"
                                         v-show="currentHeroIndex === index"
-                                        class="absolute inset-0 flex flex-col items-center justify-center p-4"
+                                        class="absolute inset-0 flex flex-col items-center justify-center lg:items-end lg:pr-20"
                                     >
-                                        <img 
-                                            :src="product.image" 
-                                            class="max-h-[250px] sm:max-h-[350px] lg:max-h-[500px] w-auto object-contain relative z-10 transform -rotate-[15deg] group-hover:-rotate-[10deg] transition-transform duration-1000 drop-shadow-[0_50px_50px_rgba(0,0,0,0.8)]" 
-                                        />
-                                        <div class="w-2/3 h-8 bg-black/60 blur-3xl rounded-[100%] mt-[-40px] opacity-80"></div>
+                                        <div class="relative group/img">
+                                            <img 
+                                                :src="product.image" 
+                                                class="max-h-[260px] sm:max-h-[420px] lg:max-h-[580px] w-auto object-contain relative z-10 transform -rotate-[15deg] group-hover/img:-rotate-[8deg] transition-transform duration-1000 drop-shadow-[0_40px_80px_rgba(0,0,0,0.8)]" 
+                                            />
+                                            <!-- Ground Shadow -->
+                                            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-8 bg-black/80 blur-3xl rounded-[100%] opacity-90 scale-x-110"></div>
+                                        </div>
                                     </div>
                                 </TransitionGroup>
                             </div>
-
-                            <!-- Bottom/Right CTA for Desktop -->
-                            <div class="hidden lg:block w-1/3 text-right z-20">
-                                <Link :href="route('shop.index')" class="inline-flex items-center gap-4 bg-white text-black px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-admin-modern transition-all shadow-2xl active:scale-95 group">
-                                    Browse Shop
-                                    <ArrowRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                </Link>
-                            </div>
                         </div>
 
-                        <!-- Mobile CTA -->
-                        <div class="lg:hidden mt-8 z-30 w-full">
-                            <Link :href="route('shop.index')" class="w-full flex items-center justify-center gap-4 bg-white text-black py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] active:scale-95">
-                                Browse Collection
-                                <ArrowRight class="w-4 h-4" />
+                        <!-- Action Button: Bottom Right -->
+                        <div class="absolute bottom-10 right-10 sm:bottom-14 sm:right-14 z-30">
+                            <Link 
+                                :href="route('shop.index')" 
+                                class="bg-white text-black px-10 py-4 sm:px-14 sm:py-5 rounded-full font-black uppercase tracking-widest text-[10px] sm:text-xs hover:bg-admin-modern transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)] active:scale-95 hover:-translate-y-1"
+                            >
+                                Check the shop
                             </Link>
                         </div>
                     </div>
 
-                    <!-- Slider Dots -->
-                    <div class="flex items-center justify-center space-x-4 mt-8 lg:mt-12">
+                    <!-- Refined Slider Pagination -->
+                    <div class="flex items-center justify-center space-x-3 mt-10 lg:mt-14">
                         <button 
                             v-for="(dot, index) in heroProducts" 
                             :key="index"
                             @click="currentHeroIndex = index"
-                            :class="['transition-all duration-500 rounded-full', currentHeroIndex === index ? 'w-12 h-1 bg-white' : 'w-2 h-1 bg-zinc-800 hover:bg-zinc-600']"
+                            :class="['transition-all duration-700 rounded-full', currentHeroIndex === index ? 'w-14 h-1 bg-white' : 'w-2.5 h-1 bg-zinc-800 hover:bg-zinc-600']"
                         ></button>
                     </div>
                 </div>
@@ -180,8 +179,8 @@ onMounted(() => {
                         :href="route('shop.index', { brand: brand.name })"
                         class="group flex flex-col items-center gap-6"
                     >
-                        <div class="w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center bg-zinc-900/40 rounded-[2rem] border border-white/5 group-hover:border-white/20 group-hover:bg-zinc-800 transition-all duration-500 group-hover:-translate-y-3">
-                            <img :src="brand.logo" class="h-8 sm:h-10 w-auto object-contain opacity-30 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-700" />
+                        <div class="w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center bg-zinc-900/40 rounded-[2rem] border border-white/5 group-hover:border-white/20 group-hover:bg-zinc-800 transition-all duration-500 group-hover:-translate-y-3 p-6 sm:p-8">
+                            <img :src="brand.logo" class="w-full h-full object-contain opacity-30 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-700" />
                         </div>
                         <span class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-700 group-hover:text-white transition-colors">{{ brand.name }}</span>
                     </Link>
@@ -267,38 +266,46 @@ onMounted(() => {
                 </div>
             </section>
 
-            <!-- About Section -->
-            <section id="about" class="py-24 lg:py-40 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-32">
-                <div class="flex-1 w-full max-w-xl lg:max-w-none h-[400px] sm:h-[550px] relative group">
-                    <div class="absolute inset-0 border-2 border-white/5 rounded-[3rem] lg:rounded-[4rem] transform translate-x-4 translate-y-4 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700"></div>
-                    <div class="absolute inset-0 bg-zinc-900 rounded-[3rem] lg:rounded-[4rem] overflow-hidden border border-white/5 shadow-2xl relative z-10">
-                        <img :src="aboutUs?.image || '/assets/images/joinus.jpg'" class="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-[2s]" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+            <!-- About Us / Heritage Section -->
+            <section id="about" class="py-24 lg:py-44 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-32">
+                <div class="flex-1 w-full max-w-xl lg:max-w-none h-[400px] sm:h-[600px] relative group">
+                    <div class="absolute inset-0 border border-white/5 rounded-[3rem] lg:rounded-[4.5rem] transform translate-x-5 translate-y-5 group-hover:translate-x-3 group-hover:translate-y-3 transition-transform duration-1000"></div>
+                    <div class="absolute inset-0 bg-[#0F0F0F] rounded-[3rem] lg:rounded-[4.5rem] overflow-hidden border border-white/10 shadow-2xl relative z-10 flex items-center justify-center">
+                        <template v-if="aboutUs?.image">
+                            <img :src="aboutUs.image" class="w-full h-full object-cover object-center grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-[2.5s]" />
+                        </template>
+                        <template v-else>
+                            <div class="flex flex-col items-center justify-center space-y-4 opacity-[0.03]">
+                                <ShoppingBag class="w-24 h-24 text-white" />
+                            </div>
+                        </template>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
                     </div>
                 </div>
 
-                <div class="flex-1 space-y-10 lg:space-y-12">
-                    <div class="space-y-4">
-                        <div class="inline-flex items-center gap-3 bg-zinc-900 border border-white/10 px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">
+                <div class="flex-1 space-y-12 lg:space-y-16">
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center gap-4 bg-zinc-900/50 border border-white/5 px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 select-none">
+                            <Star class="w-3 h-3 text-admin-modern" />
                             Our Heritage
                         </div>
-                        <h2 class="text-5xl sm:text-7xl font-black uppercase italic tracking-tighter leading-[0.9] text-white">
+                        <h2 class="text-6xl sm:text-8xl font-black uppercase italic tracking-tighter leading-[0.85] text-white">
                             {{ aboutUs?.title_line_1 || 'Unapologetic' }} <br />
                             <span class="text-zinc-800">{{ aboutUs?.title_line_2 || 'Performance' }}</span>
                         </h2>
-                        <p class="text-zinc-400 text-base sm:text-lg font-bold italic tracking-tight uppercase leading-relaxed max-w-lg">
+                        <p class="text-zinc-400 text-lg sm:text-xl font-bold italic tracking-tight uppercase leading-relaxed max-w-lg opacity-80">
                             {{ aboutUs?.description || 'Crafting the highest quality silhouettes for the modern urban explorer. We believe in style without compromise.' }}
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-12 border-y border-white/5 py-10">
+                    <div class="grid grid-cols-2 gap-16 border-y border-white/5 py-14">
                         <div v-for="stat in (aboutUs?.stats || [{label: 'Global Outlets', value: '12+'}, {label: 'Silhouettes', value: '250+'}])" :key="stat.label">
-                            <div class="text-4xl sm:text-5xl font-black text-white italic tracking-tighter mb-2">{{ stat.value }}</div>
-                            <div class="text-zinc-600 font-black uppercase tracking-widest text-[10px]">{{ stat.label }}</div>
+                            <div class="text-5xl sm:text-6xl font-black text-white italic tracking-tighter mb-2">{{ stat.value }}</div>
+                            <div class="text-zinc-600 font-black uppercase tracking-[0.2em] text-[10px]">{{ stat.label }}</div>
                         </div>
                     </div>
 
-                    <Link :href="route('shop.index')" class="inline-flex bg-white text-black px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-admin-modern transition-all shadow-2xl active:scale-95">Discover More</Link>
+                    <Link :href="route('shop.index')" class="inline-flex bg-white text-black px-14 py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-admin-modern transition-all shadow-[0_20px_40px_rgba(255,255,255,0.05)] active:scale-95 hover:-translate-y-1">Explore History</Link>
                 </div>
             </section>
         </main>

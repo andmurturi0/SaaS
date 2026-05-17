@@ -90,7 +90,7 @@ class DashboardController extends Controller
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'price' => '€' . number_format($product->sale_price ?: $product->price, 0),
+                    'price' => (float)($product->sale_price ?: $product->price),
                     'stock' => $product->stock > 0 ? 'In Stock' : 'Out of Stock',
                     'image' => $product->image,
                 ];
