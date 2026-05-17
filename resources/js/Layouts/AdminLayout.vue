@@ -1,165 +1,196 @@
 <script setup>
-import { ref } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import LoadingScreen from '@/Components/LoadingScreen.vue';
 import Toast from '@/Components/Toast.vue';
+import { 
+    LayoutDashboard, 
+    Home, 
+    Package, 
+    ShoppingCart, 
+    Users, 
+    BarChart3, 
+    Boxes, 
+    Settings,
+    Menu,
+    X,
+    Search,
+    Bell,
+    Plus,
+    LogOut,
+    UserCircle
+} from 'lucide-vue-next';
 
 const page = usePage();
 const user = page.props.auth.user;
+const isSidebarOpen = ref(false);
 
 const navigation = [
-    { name: 'Dashboard', href: route('dashboard'), icon: 'dashboard' },
-    { name: 'Home Page', href: route('admin.home.edit'), icon: 'home' },
-    { name: 'Products', href: route('admin.products.index'), icon: 'products' },
-    { name: 'Orders', href: route('admin.orders.index'), icon: 'orders' },
-    { name: 'Customers', href: route('admin.customers.index'), icon: 'customers' },
-    { name: 'Analytics', href: route('admin.analytics.index'), icon: 'analytics' },
-    { name: 'Inventory', href: route('admin.inventory.index'), icon: 'inventory' },
-    { name: 'Settings', href: route('admin.settings.index'), icon: 'settings' },
+    { name: 'Dashboard', href: route('dashboard'), icon: LayoutDashboard },
+    { name: 'Home Page', href: route('admin.home.edit'), icon: Home },
+    { name: 'Products', href: route('admin.products.index'), icon: Package },
+    { name: 'Orders', href: route('admin.orders.index'), icon: ShoppingCart },
+    { name: 'Customers', href: route('admin.customers.index'), icon: Users },
+    { name: 'Analytics', href: route('admin.analytics.index'), icon: BarChart3 },
+    { name: 'Inventory', href: route('admin.inventory.index'), icon: Boxes },
+    { name: 'Settings', href: route('admin.settings.index'), icon: Settings },
 ];
 
-const getIcon = (name) => {
-    switch (name) {
-        case 'dashboard': return 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z';
-        case 'home': return 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z';
-        case 'products': return 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z';
-        case 'orders': return 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z M3 6h18 M16 10a4 4 0 0 1-8 0';
-        case 'customers': return 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75';
-        case 'analytics': return 'M18 20V10 M12 20V4 M6 20v-6';
-        case 'inventory': return 'M12 2L2 7l10 5 10-5-10-5z M2 17l10 5 10-5 M2 12l10 5 10-5';
-        case 'messages': return 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z';
-        case 'settings': return 'M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z';
-        default: return '';
+const isUrl = (url) => {
+    const currentUrl = page.url.split('?')[0].substr(1);
+    const targetUrl = url.replace(page.props.app_url + '/', '').replace(page.props.app_url, '');
+    return currentUrl === targetUrl || currentUrl.startsWith(targetUrl + '/');
+};
+
+// Close sidebar on route change (mobile)
+router.on('finish', () => {
+    isSidebarOpen.value = false;
+});
+
+// Close sidebar on resize if window > md
+const handleResize = () => {
+    if (window.innerWidth >= 1024) {
+        isSidebarOpen.value = false;
     }
 };
 
-const isUrl = (...urls) => {
-    let currentUrl = page.url.substr(1);
-    if (urls[0] === '') {
-        return currentUrl === '';
-    }
-    return urls.filter((url) => currentUrl.startsWith(url)).length;
-};
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
 </script>
 
 <template>
-    <div class="min-h-screen font-sans flex text-white bg-admin-main">
+    <div class="min-h-screen bg-admin-main text-white font-sans selection:bg-admin-modern selection:text-black">
         <LoadingScreen />
         <Toast />
         
+        <!-- Mobile Sidebar Overlay -->
+        <div 
+            v-if="isSidebarOpen" 
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+            @click="isSidebarOpen = false"
+        ></div>
+
         <!-- Sidebar -->
-        <aside class="w-72 bg-admin-sidebar flex-shrink-0 flex flex-col h-screen sticky top-0 overflow-y-auto border-r border-white/5">
-            <div class="p-10 mb-6">
-                <Link href="/" class="flex items-center gap-3">
-                    <img src="/assets/images/logo-white.png" alt="Shkeel Shoes" class="h-10 brightness-0 invert" />
-                </Link>
-            </div>
-
-            <nav class="flex-1 px-6 space-y-2">
-                <div v-for="item in navigation" :key="item.name">
-                    <Link
-                        :href="item.href"
-                        class="group flex items-center px-4 py-4 text-sm font-medium rounded-2xl transition-all duration-300"
-                        :class="[
-                            isUrl(item.href.replace(page.props.app_url, ''))
-                                ? 'bg-zinc-800/50 text-white shadow-[0_0_20px_rgba(255,255,255,0.05)] border border-white/5'
-                                : 'text-zinc-500 hover:text-white hover:bg-white/5'
-                        ]"
-                    >
-                        <svg
-                            class="mr-4 flex-shrink-0 h-5 w-5 transition-colors duration-300"
-                            :class="[
-                                isUrl(item.href.replace(page.props.app_url, ''))
-                                    ? 'text-admin-modern'
-                                    : 'text-zinc-500 group-hover:text-white'
-                            ]"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                        >
-                            <path stroke-linecap="round" stroke-linejoin="round" :d="getIcon(item.icon)" />
-                        </svg>
-                        {{ item.name }}
+        <aside 
+            :class="[
+                'fixed inset-y-0 left-0 z-50 w-72 bg-admin-sidebar border-r border-white/5 transform transition-transform duration-300 ease-in-out lg:translate-x-0',
+                isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            ]"
+        >
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="h-24 flex items-center px-8 border-b border-white/5">
+                    <Link href="/" class="flex items-center gap-3 group">
+                        <img src="/assets/images/logo-white.png" alt="Shkeel Shoes" class="h-8 transition-transform group-hover:scale-105" />
                     </Link>
+                    <button @click="isSidebarOpen = false" class="ml-auto p-2 text-zinc-500 hover:text-white lg:hidden">
+                        <X class="w-6 h-6" />
+                    </button>
                 </div>
-            </nav>
 
-            <div class="p-6 border-t border-white/5">
-                <div class="bg-zinc-900/50 rounded-3xl p-4 flex items-center gap-3 border border-white/5">
-                    <div class="w-10 h-10 rounded-full bg-admin-modern flex items-center justify-center font-bold text-black uppercase">
-                        {{ user.name.charAt(0) }}
+                <!-- Navigation -->
+                <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+                    <div v-for="item in navigation" :key="item.name">
+                        <Link
+                            :href="item.href"
+                            class="group flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200"
+                            :class="[
+                                isUrl(item.href)
+                                    ? 'bg-white/10 text-white shadow-sm ring-1 ring-white/10'
+                                    : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'
+                            ]"
+                        >
+                            <component 
+                                :is="item.icon" 
+                                class="mr-3.5 h-5 w-5 transition-colors duration-200"
+                                :class="[isUrl(item.href) ? 'text-admin-modern' : 'text-zinc-500 group-hover:text-zinc-300']"
+                            />
+                            {{ item.name }}
+                        </Link>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-white truncate">{{ user.name }}</p>
-                        <p class="text-xs text-zinc-500 truncate">{{ user.email }}</p>
+                </nav>
+
+                <!-- User Profile -->
+                <div class="p-4 border-t border-white/5">
+                    <div class="bg-zinc-900/40 rounded-2xl p-3 flex items-center gap-3 border border-white/5 hover:bg-zinc-900/60 transition-colors group cursor-pointer">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-admin-modern to-emerald-500 flex items-center justify-center font-bold text-black shadow-lg shadow-admin-modern/10">
+                            {{ user.name.charAt(0) }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-black uppercase tracking-widest text-white truncate">{{ user.name }}</p>
+                            <p class="text-[10px] font-bold text-zinc-500 truncate uppercase">{{ user.role }}</p>
+                        </div>
+                        <LogOut class="w-4 h-4 text-zinc-600 group-hover:text-rose-500 transition-colors" />
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <!-- Main Content Area -->
+        <div class="lg:ml-72 flex flex-col min-h-screen">
             <!-- Topbar -->
-            <header class="h-24 flex items-center justify-between px-10 flex-shrink-0 sticky top-0 bg-admin-main/80 backdrop-blur-xl z-10 border-b border-white/5">
-                <div class="flex-1 max-w-xl">
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-zinc-500 group-focus-within:text-admin-modern transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+            <header class="h-20 lg:h-24 flex items-center justify-between px-4 sm:px-8 lg:px-10 sticky top-0 bg-admin-main/80 backdrop-blur-xl z-30 border-b border-white/5">
+                <div class="flex items-center gap-4 lg:hidden">
+                    <button @click="isSidebarOpen = true" class="p-2 text-zinc-400 hover:text-white transition-colors">
+                        <Menu class="w-6 h-6" />
+                    </button>
+                    <img src="/assets/images/logo-white.png" alt="Logo" class="h-6" />
+                </div>
+
+                <div class="hidden md:flex flex-1 max-w-xl mx-4 lg:mx-0">
+                    <div class="relative w-full group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-500 group-focus-within:text-admin-modern transition-colors">
+                            <Search class="h-4 w-4" />
                         </div>
                         <input
                             type="text"
-                            placeholder="Search everything..."
-                            class="block w-full pl-12 pr-4 py-3 bg-zinc-900/50 border border-white/5 text-white placeholder-zinc-500 rounded-2xl focus:ring-2 focus:ring-admin-modern transition-all shadow-sm"
+                            placeholder="Quick search..."
+                            class="block w-full pl-11 pr-4 py-2.5 bg-zinc-900/50 border border-white/5 text-sm text-white placeholder-zinc-500 rounded-xl focus:ring-1 focus:ring-admin-modern/50 focus:border-admin-modern/50 transition-all outline-none"
                         />
                     </div>
                 </div>
 
-                <div class="flex items-center gap-6">
-                    <button class="p-3 bg-zinc-900/50 border border-white/5 text-zinc-400 rounded-2xl shadow-sm hover:text-white hover:bg-zinc-800 transition-all relative">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                        <span class="absolute top-3 right-3 w-2 h-2 bg-admin-modern rounded-full border-2 border-zinc-900"></span>
-                    </button>
-
-                    <button class="p-3 bg-zinc-900/50 border border-white/5 text-zinc-400 rounded-2xl shadow-sm hover:text-white hover:bg-zinc-800 transition-all">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </button>
+                <div class="flex items-center gap-3 sm:gap-5">
+                    <!-- Action Buttons - Hidden on mobile, icons only on tablet -->
+                    <div class="hidden sm:flex items-center gap-2">
+                        <button class="p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-all relative">
+                            <Bell class="h-5 w-5" />
+                            <span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-admin-modern rounded-full ring-2 ring-admin-main"></span>
+                        </button>
+                    </div>
 
                     <Link
                         :href="route('admin.products.create')"
-                        class="bg-admin-modern hover:bg-admin-modern/90 text-black px-6 py-3 rounded-2xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-admin-modern/20"
+                        class="bg-white text-black h-10 sm:h-11 px-4 sm:px-6 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-zinc-200 transition-all shadow-xl active:scale-95"
                     >
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Add Product
+                        <Plus class="h-4 w-4" />
+                        <span class="hidden sm:inline">Add Product</span>
                     </Link>
 
-                    <div class="h-10 w-[1px] bg-white/10 mx-2"></div>
+                    <div class="h-8 w-px bg-white/10 mx-1"></div>
 
                     <Dropdown align="right" width="48">
                         <template #trigger>
-                            <button class="flex items-center gap-2 group">
-                                <div class="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center font-bold text-white overflow-hidden border-2 border-white/10 shadow-sm group-hover:border-admin-modern transition-all">
-                                    <span v-if="!user.profile_photo_url">{{ user.name.charAt(0) }}</span>
-                                    <img v-else :src="user.profile_photo_url" :alt="user.name" class="w-full h-full object-cover" />
+                            <button class="flex items-center group">
+                                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-zinc-800 border border-white/10 overflow-hidden group-hover:border-admin-modern transition-all duration-300">
+                                    <img v-if="user.profile_photo_url" :src="user.profile_photo_url" :alt="user.name" class="w-full h-full object-cover" />
+                                    <div v-else class="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-400">
+                                        <UserCircle class="w-6 h-6" />
+                                    </div>
                                 </div>
                             </button>
                         </template>
 
                         <template #content>
-                            <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
-                            <DropdownLink :href="route('logout')" method="post" as="button">
-                                Log Out
+                            <div class="px-4 py-3 border-b border-white/5 lg:hidden">
+                                <p class="text-xs font-bold text-white">{{ user.name }}</p>
+                                <p class="text-[10px] text-zinc-500 truncate">{{ user.email }}</p>
+                            </div>
+                            <DropdownLink :href="route('profile.edit')"> Profile Settings </DropdownLink>
+                            <DropdownLink :href="route('logout')" method="post" as="button" class="text-rose-500">
+                                Sign Out
                             </DropdownLink>
                         </template>
                     </Dropdown>
@@ -167,16 +198,28 @@ const isUrl = (...urls) => {
             </header>
 
             <!-- Page Content -->
-            <div class="p-10 flex-1">
+            <main class="flex-1 p-4 sm:p-8 lg:p-10 max-w-[1920px] mx-auto w-full">
                 <slot />
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 </template>
 
 <style scoped>
-/* Glassmorphism effects */
-.bg-admin-sidebar {
-    background: #0F0F10;
+.bg-admin-main { background: #09090B; }
+.bg-admin-sidebar { background: #0F0F10; }
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 </style>

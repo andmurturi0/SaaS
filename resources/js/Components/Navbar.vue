@@ -1,31 +1,46 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { Link, usePage, router } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import { 
+    Search, 
+    ShoppingCart, 
+    Heart, 
+    Menu, 
+    X, 
+    User,
+    LogOut,
+    ChevronRight,
+    Home,
+    ShoppingBag,
+    Star,
+    Grid,
+    Info
+} from 'lucide-vue-next';
 
 const props = defineProps({
     auth: Object,
 });
 
 const searchQuery = ref('');
+const isMobileMenuOpen = ref(false);
+const isScrolled = ref(false);
+const scrollProgress = ref(0);
+const activeSection = ref('home');
 
 const performSearch = () => {
     if (searchQuery.value.trim()) {
         router.get(route('shop.index'), { search: searchQuery.value });
+        isMobileMenuOpen.value = false;
     }
 };
-
-const isScrolled = ref(false);
-const scrollProgress = ref(0);
-const activeSection = ref('home');
 
 const handleScroll = () => {
     const scrollY = window.scrollY;
     isScrolled.value = scrollY > 50;
     scrollProgress.value = Math.min(scrollY / 200, 1);
     
-    // Only detect sections if we are on the home page
     if (route().current('home')) {
         const sections = ['home', 'brands', 'categories', 'about', 'contact'];
         for (const section of sections) {
@@ -42,11 +57,11 @@ const handleScroll = () => {
 };
 
 const navLinks = [
-    { name: 'Home', id: 'home', type: 'route' },
-    { name: 'Shop', id: 'shop.index', type: 'route' },
-    { name: 'Brands', id: 'brands', type: 'anchor' },
-    { name: 'Categories', id: 'categories', type: 'anchor' },
-    { name: 'About us', id: 'about', type: 'anchor' },
+    { name: 'Home', id: 'home', type: 'route', icon: Home },
+    { name: 'Shop', id: 'shop.index', type: 'route', icon: ShoppingBag },
+    { name: 'Brands', id: 'brands', type: 'anchor', icon: Star },
+    { name: 'Categories', id: 'categories', type: 'anchor', icon: Grid },
+    { name: 'About us', id: 'about', type: 'anchor', icon: Info },
 ];
 
 onMounted(() => {
@@ -55,6 +70,16 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
+});
+
+// Close mobile menu on route change
+router.on('finish', () => {
+    isMobileMenuOpen.value = false;
+    document.body.style.overflow = '';
+});
+
+watch(isMobileMenuOpen, (val) => {
+    document.body.style.overflow = val ? 'hidden' : '';
 });
 
 const isLinkActive = (link) => {
@@ -77,98 +102,98 @@ const getHref = (link) => {
 <template>
     <nav 
         :class="[
-            'fixed top-0 w-full z-50 transition-all duration-700 flex flex-col items-center px-10',
-            isScrolled ? 'py-2 bg-black/90 backdrop-blur-xl border-b border-white/5' : 'py-10'
+            'fixed top-0 w-full z-50 transition-all duration-500 flex flex-col items-center',
+            isScrolled ? 'py-3 bg-black/80 backdrop-blur-xl border-b border-white/5' : 'py-6 lg:py-10'
         ]"
     >
-        <!-- Logo Section -->
-        <div 
-            class="w-full max-w-7xl mx-auto flex relative transition-all duration-300"
-            :style="{ 
-                height: (128 - scrollProgress * 96) + 'px',
-                marginBottom: isScrolled ? '-2.5rem' : '1.5rem'
-            }"
-        >
-            <Link :href="route('home')" class="absolute top-0 transition-all duration-100 ease-out"
-                :style="{
-                    left: (50 - scrollProgress * 50) + '%',
-                    transform: `translateX(-${50 - scrollProgress * 50}%) scale(${1 - scrollProgress * 0.75})`,
-                    transformOrigin: 'left top',
-                    height: '128px'
-                }"
+        <div class="w-full px-4 sm:px-8 lg:px-12 flex items-center justify-between max-w-[1920px] mx-auto relative">
+            
+            <!-- Mobile Menu Toggle -->
+            <button 
+                @click="isMobileMenuOpen = true"
+                class="lg:hidden p-2 text-zinc-400 hover:text-white transition-colors"
             >
-                <img src="/assets/images/logo-white.png" alt="Logo" class="h-full" />
-            </Link>
-        </div>
+                <Menu class="w-6 h-6" />
+            </button>
 
-        <!-- Links Section -->
-        <div 
-            class="flex items-center justify-between w-full max-w-7xl mx-auto transition-all duration-500"
-            :class="[isScrolled ? 'pl-40' : '']"
-        >
-            <!-- Navigation links -->
-            <div class="flex items-center space-x-1 bg-zinc-900/40 rounded-full p-1 border border-white/5 backdrop-blur-sm">
+            <!-- Logo Section - Center on mobile/tablet, Left on desktop when scrolled -->
+            <div 
+                class="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 transition-all duration-500 flex items-center"
+                :class="[isScrolled ? 'lg:w-40' : 'lg:w-auto']"
+            >
+                <Link :href="route('home')" class="block">
+                    <img 
+                        src="/assets/images/logo-white.png" 
+                        alt="Logo" 
+                        class="transition-all duration-500"
+                        :style="{ 
+                            height: isScrolled ? '24px' : '48px',
+                            maxHeight: '128px'
+                        }" 
+                    />
+                </Link>
+            </div>
+
+            <!-- Desktop Links Section -->
+            <div 
+                class="hidden lg:flex items-center space-x-1 bg-zinc-900/40 rounded-full p-1 border border-white/5 backdrop-blur-sm transition-opacity duration-300"
+                :class="[isScrolled ? 'opacity-100' : 'opacity-100']"
+            >
                 <template v-for="link in navLinks" :key="link.name">
                     <Link
                         v-if="link.type === 'route' || !route().current('home')"
                         :href="getHref(link)"
                         :class="[
-                            'px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-500 relative z-10 whitespace-nowrap',
-                            isLinkActive(link) ? 'text-black' : 'text-zinc-400 hover:text-white'
+                            'px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 relative z-10 whitespace-nowrap',
+                            isLinkActive(link) ? 'text-black' : 'text-zinc-500 hover:text-white'
                         ]"
                     >
                         <span class="relative z-10">{{ link.name }}</span>
                         <div 
                             v-if="isLinkActive(link)" 
-                            class="absolute inset-0 bg-white rounded-full z-0 transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                            class="absolute inset-0 bg-white rounded-full z-0 shadow-[0_0_20px_rgba(255,255,255,0.4)]"
                         ></div>
                     </Link>
                     <a 
                         v-else
                         :href="'#' + link.id"
                         :class="[
-                            'px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-500 relative z-10 whitespace-nowrap',
-                            isLinkActive(link) ? 'text-black' : 'text-zinc-400 hover:text-white'
+                            'px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 relative z-10 whitespace-nowrap',
+                            isLinkActive(link) ? 'text-black' : 'text-zinc-500 hover:text-white'
                         ]"
                     >
                         <span class="relative z-10">{{ link.name }}</span>
                         <div 
                             v-if="isLinkActive(link)" 
-                            class="absolute inset-0 bg-white rounded-full z-0 transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                            class="absolute inset-0 bg-white rounded-full z-0 shadow-[0_0_20px_rgba(255,255,255,0.4)]"
                         ></div>
                     </a>
                 </template>
             </div>
 
             <!-- Right Side: Search, Cart, Profile -->
-            <div class="flex items-center space-x-5">
-                <!-- Search -->
-                <div class="relative flex items-center group">
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Search (Desktop) -->
+                <div class="hidden md:relative md:flex items-center group">
+                    <Search class="w-4 h-4 absolute left-3.5 text-zinc-500 group-focus-within:text-white transition-colors" />
                     <input 
                         type="text" 
                         v-model="searchQuery"
                         @keyup.enter="performSearch"
                         placeholder="Search..." 
-                        class="bg-zinc-900/50 border border-white/5 rounded-full py-2 pl-10 pr-4 text-xs w-32 focus:w-44 transition-all duration-500 focus:ring-1 focus:ring-white/20 placeholder:text-zinc-600 text-white"
+                        class="bg-zinc-900/50 border border-white/5 rounded-full py-2 pl-10 pr-4 text-[10px] w-32 focus:w-48 transition-all duration-500 focus:ring-1 focus:ring-white/20 placeholder:text-zinc-600 text-white uppercase font-bold tracking-widest"
                     />
-                    <svg class="w-4 h-4 absolute left-3.5 text-zinc-500 group-focus-within:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
                 </div>
+
+                <!-- Wishlist -->
+                <Link :href="route('favorites.index')" class="p-2.5 hover:bg-zinc-800 rounded-full transition-all duration-300 group border border-transparent hover:border-white/5">
+                    <Heart class="w-5 h-5 text-zinc-500 group-hover:text-rose-500 transition-colors" :class="{'fill-rose-500 text-rose-500': route().current('favorites.index')}" />
+                </Link>
 
                 <!-- Cart -->
                 <Link :href="route('cart.index')" class="p-2.5 hover:bg-zinc-800 rounded-full transition-all duration-300 relative group border border-transparent hover:border-white/5">
-                    <svg class="w-5 h-5 text-zinc-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+                    <ShoppingCart class="w-5 h-5 text-zinc-500 group-hover:text-white" />
                     <span v-if="$page.props.cart_count > 0" class="absolute top-1 right-1 bg-white text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-lg">{{ $page.props.cart_count }}</span>
-                </Link>
-
-                <!-- Wishlist -->
-                <Link :href="route('favorites.index')" :class="[route().current('favorites.index') ? 'bg-zinc-800 border-white/10' : 'border-transparent']" class="p-2.5 hover:bg-zinc-800 rounded-full transition-all duration-300 group border hover:border-white/5">
-                    <svg class="w-5 h-5 text-zinc-400 group-hover:text-red-500 transition-colors" :class="{'text-red-500': route().current('favorites.index')}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
                 </Link>
 
                 <!-- Profile -->
@@ -176,26 +201,119 @@ const getHref = (link) => {
                     <template v-if="auth.user">
                         <Dropdown align="right" width="48">
                             <template #trigger>
-                                <button class="flex items-center space-x-2 bg-zinc-900/50 border border-white/5 hover:bg-zinc-800 px-4 py-1.5 rounded-full transition-all duration-300">
-                                    <span class="text-xs font-bold tracking-wider uppercase">{{ auth.user.name }}</span>
-                                    <div class="w-6 h-6 bg-white text-black rounded-full flex items-center justify-center font-black text-[10px]">
-                                        {{ auth.user.name.charAt(0) }}
+                                <button class="flex items-center space-x-3 bg-zinc-900/50 border border-white/5 hover:bg-zinc-800 p-1.5 pr-4 rounded-full transition-all duration-300">
+                                    <div class="w-8 h-8 bg-zinc-800 border border-white/10 rounded-full flex items-center justify-center overflow-hidden">
+                                        <img v-if="auth.user.profile_photo_url" :src="auth.user.profile_photo_url" class="w-full h-full object-cover" />
+                                        <span v-else class="text-[10px] font-black">{{ auth.user.name.charAt(0) }}</span>
                                     </div>
+                                    <span class="hidden sm:inline-block text-[10px] font-black tracking-widest uppercase text-zinc-300">{{ auth.user.name }}</span>
                                 </button>
                             </template>
                             <template #content>
-                                <DropdownLink v-if="auth.user.role === 'admin'" :href="route('dashboard')"> Dashboard </DropdownLink>
-                                <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
-                                <DropdownLink :href="route('orders.index')"> Orders </DropdownLink>
-                                <DropdownLink :href="route('logout')" method="post" as="button"> Log Out </DropdownLink>
+                                <DropdownLink v-if="auth.user.role === 'admin'" :href="route('dashboard')"> Admin Dashboard </DropdownLink>
+                                <DropdownLink :href="route('profile.edit')"> My Profile </DropdownLink>
+                                <DropdownLink :href="route('orders.index')"> Order History </DropdownLink>
+                                <div class="border-t border-white/5 my-1"></div>
+                                <DropdownLink :href="route('logout')" method="post" as="button" class="text-rose-500"> Log Out </DropdownLink>
                             </template>
                         </Dropdown>
                     </template>
                     <template v-else>
-                        <Link :href="route('login')" class="text-[10px] font-black tracking-wider uppercase bg-white text-black px-6 py-2 rounded-full hover:bg-zinc-200 transition-all">Login</Link>
+                        <Link :href="route('login')" class="text-[9px] font-black tracking-[0.2em] uppercase bg-white text-black px-6 py-3 rounded-full hover:bg-zinc-200 transition-all shadow-xl active:scale-95">Login</Link>
                     </template>
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Menu Drawer -->
+        <Transition
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="-translate-x-full"
+            enter-to-class="translate-x-0"
+            leave-active-class="transition duration-200 ease-in"
+            leave-from-class="translate-x-0"
+            leave-to-class="-translate-x-full"
+        >
+            <div v-if="isMobileMenuOpen" class="fixed inset-0 z-[60] lg:hidden">
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" @click="isMobileMenuOpen = false"></div>
+                
+                <!-- Drawer -->
+                <div class="absolute inset-y-0 left-0 w-[85%] max-w-sm bg-zinc-900 border-r border-white/5 shadow-2xl flex flex-col">
+                    <div class="p-8 flex items-center justify-between border-b border-white/5">
+                        <img src="/assets/images/logo-white.png" alt="Logo" class="h-6" />
+                        <button @click="isMobileMenuOpen = false" class="p-2 text-zinc-500 hover:text-white">
+                            <X class="w-6 h-6" />
+                        </button>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto p-8 space-y-8">
+                        <!-- Mobile Search -->
+                        <div class="relative group">
+                            <Search class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
+                            <input 
+                                type="text" 
+                                v-model="searchQuery"
+                                @keyup.enter="performSearch"
+                                placeholder="Search products..." 
+                                class="w-full bg-black border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-xs font-bold uppercase tracking-widest text-white focus:ring-1 focus:ring-white/20"
+                            />
+                        </div>
+
+                        <!-- Main Links -->
+                        <nav class="space-y-2">
+                            <template v-for="link in navLinks" :key="link.name">
+                                <Link
+                                    v-if="link.type === 'route' || !route().current('home')"
+                                    :href="getHref(link)"
+                                    class="flex items-center justify-between p-4 rounded-2xl transition-all"
+                                    :class="[isLinkActive(link) ? 'bg-white text-black' : 'text-zinc-500 hover:text-white hover:bg-white/5']"
+                                >
+                                    <div class="flex items-center gap-4">
+                                        <component :is="link.icon" class="w-5 h-5" />
+                                        <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
+                                    </div>
+                                    <ChevronRight class="w-4 h-4 opacity-50" />
+                                </Link>
+                                <a 
+                                    v-else
+                                    :href="'#' + link.id"
+                                    @click="isMobileMenuOpen = false"
+                                    class="flex items-center justify-between p-4 rounded-2xl transition-all"
+                                    :class="[isLinkActive(link) ? 'bg-white text-black' : 'text-zinc-500 hover:text-white hover:bg-white/5']"
+                                >
+                                    <div class="flex items-center gap-4">
+                                        <component :is="link.icon" class="w-5 h-5" />
+                                        <span class="text-xs font-black uppercase tracking-widest">{{ link.name }}</span>
+                                    </div>
+                                    <ChevronRight class="w-4 h-4 opacity-50" />
+                                </a>
+                            </template>
+                        </nav>
+                    </div>
+
+                    <!-- Footer / Account -->
+                    <div class="p-8 border-t border-white/5 bg-black/50">
+                        <div v-if="auth.user" class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center font-black">
+                                    {{ auth.user.name.charAt(0) }}
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-white">{{ auth.user.name }}</p>
+                                    <p class="text-[9px] font-bold uppercase tracking-widest text-zinc-600 mt-0.5">My Account</p>
+                                </div>
+                            </div>
+                            <Link :href="route('logout')" method="post" as="button" class="p-2 text-zinc-500 hover:text-rose-500 transition-colors">
+                                <LogOut class="w-5 h-5" />
+                            </Link>
+                        </div>
+                        <Link v-else :href="route('login')" class="w-full flex items-center justify-center py-4 bg-white text-black rounded-2xl font-black uppercase tracking-widest text-xs">
+                            Sign In
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </Transition>
     </nav>
 </template>
