@@ -36,7 +36,7 @@ class HandleInertiaRequests extends Middleware
                 'unread_notifications_count' => $request->user()?->unreadNotifications->count() ?? 0,
                 'notifications' => $request->user() ? $request->user()->notifications()->take(5)->get() : [],
             ],
-            'cart_count' => app(\App\Services\CartService::class)->getCart()->items->sum('quantity'),
+            'cart_count' => class_exists(\App\Services\CartService::class) ? app(\App\Services\CartService::class)->getCart()->items->sum('quantity') : 0,
             'app_url' => config('app.url'),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
