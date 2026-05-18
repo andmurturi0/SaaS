@@ -16,6 +16,7 @@ return new class extends Migration
             $header->decimal('min_order', 10, 2)->default(0);
             $header->integer('max_uses')->nullable();
             $header->integer('used_count')->default(0);
+            $header->timestamp('starts_at')->nullable();
             $header->timestamp('expires_at')->nullable();
             $header->timestamps();
         });
