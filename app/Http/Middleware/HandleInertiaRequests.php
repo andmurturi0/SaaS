@@ -29,23 +29,29 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user()?->load('notifications'),
-                'unread_notifications_count' => $request->user()?->unreadNotifications->count() ?? 0,
-                'notifications' => $request->user() ? $request->user()->notifications()->take(5)->get() : [],
+                'user' => $user,
+                'unread_notifications_count' => $user ? ($user->unreadNotifications()->count() ?? 0) : 0,
+                'notifications' => $user ? $user->notifications()->take(5)->get() : [],
             ],
-            'cart_count' => function () {
-                    try {
-                        return app(\App\Services\CartService::class)
-                            ->getCart()
-                            ->items
-                            ->sum('quantity');
-                    } catch (\Throwable $e) {
-                        return 0;
-                    }
-                },
+            'cart_count' => function () use ($user) {
+                if (!$user) {
+                    return 0;
+                }
+
+                try {
+                    return app(\App\Services\CartService::class)
+                        ->getCart()
+                        ->items
+                        ->sum('quantity');
+                } catch (\Throwable $e) {
+                    return 0;
+                }
+            },
             'app_url' => config('app.url'),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

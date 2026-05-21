@@ -27,7 +27,10 @@ class AdminAccessTest extends TestCase
 
     public function test_admin_can_access_admin_routes()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
         
         $response = $this->actingAs($admin)->get(route('dashboard'));
         $response->assertStatus(200);
