@@ -59,7 +59,7 @@ onUnmounted(() => {
             </div>
             
             <div class="mt-4 text-[10px] font-black uppercase tracking-[0.5em] text-zinc-500 animate-pulse">
-                Loading Shkeel Shoes...
+                Loading...
             </div>
         </div>
     </Transition>

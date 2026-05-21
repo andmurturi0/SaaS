@@ -15,9 +15,9 @@ class InitialSeeder extends Seeder
     {
         // 1. Admin User
         User::updateOrCreate(
-            ['email' => 'admin@shkeel.com'],
+            ['email' => 'admin@gmail.com'],
             [
-                'name' => 'Admin ShKeel',
+                'name' => 'Admin',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
                 'email_verified_at' => now(),
@@ -25,7 +25,7 @@ class InitialSeeder extends Seeder
         );
 
         // 2. Regular User
-        User::firstOrCreate(['email' => 'client@shkeel.com'], [
+        User::firstOrCreate(['email' => 'client@gmail.com'], [
             'name' => 'Test Client',
             'password' => Hash::make('password'),
             'role' => 'customer',

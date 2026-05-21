@@ -12,10 +12,9 @@ class SettingsController extends Controller
     {
         $settings = [
             'store' => [
-                'name' => 'Shkeel Shoes',
+                'name' => 'Store Name',
                 'logo' => '/assets/images/LOGO.png',
                 'currency' => 'USD',
-                'language' => 'English',
                 'timezone' => 'UTC+1'
             ],
             'appearance' => [
@@ -41,8 +40,8 @@ class SettingsController extends Controller
         ];
 
         $team = [
-            ['id' => 1, 'name' => 'Admin User', 'email' => 'admin@shkeel.com', 'role' => 'Super Admin'],
-            ['id' => 2, 'name' => 'Support Team', 'email' => 'support@shkeel.com', 'role' => 'Manager'],
+            ['id' => 1, 'name' => 'Admin User', 'email' => 'admin@gmail.com', 'role' => 'Super Admin'],
+            ['id' => 2, 'name' => 'Support Team', 'email' => 'support@gmail.com', 'role' => 'Manager'],
         ];
 
         return Inertia::render('Admin/Settings/Index', [

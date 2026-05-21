@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Link, usePage, router } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -127,7 +127,7 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
                 <!-- Sidebar Header -->
                 <div class="h-24 flex items-center px-8 border-b border-white/5">
                     <Link href="/" class="flex items-center gap-3 group">
-                        <img src="/assets/images/logo-white.png" alt="Shkeel Shoes" class="h-8 transition-transform group-hover:scale-105" />
+                        <img src="/assets/images/logo-white.png" alt="Store" class="h-8 transition-transform group-hover:scale-105" />
                     </Link>
                     <button @click="isSidebarOpen = false" class="ml-auto p-2 text-zinc-500 hover:text-white lg:hidden">
                         <X class="w-6 h-6" />

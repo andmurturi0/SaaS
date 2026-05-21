@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { Head, usePage, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { User, Shield, Store, Globe, Lock, Save, Camera } from 'lucide-vue-next';
+import { User, Shield, Store, Lock, Save, Camera } from 'lucide-vue-next';
 
 const props = defineProps({
     settings: Object,
