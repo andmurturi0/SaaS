@@ -1,4 +1,4 @@
-# 🛒 SaaS E-Commerce Platform
+# 🛒 Laravel E-Commerce Platform
 
 A full-stack e-commerce platform built with **Laravel 12** and **Inertia.js (Vue.js)**, featuring a complete shopping experience, admin dashboard, and intelligent business logic.
 
