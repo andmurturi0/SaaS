@@ -92,6 +92,10 @@ class ProductController extends Controller
             'gallery_images.*' => 'image|max:2048',
         ]);
 
+        // Remove images from validated data to prevent overwriting with null
+        unset($validated['image']);
+        unset($validated['gallery_images']);
+
         if ($request->hasFile('image')) {
             // Delete old main image if exists
             if ($product->image) {

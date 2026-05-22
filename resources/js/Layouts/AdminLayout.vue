@@ -201,51 +201,66 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
                 <div class="flex items-center gap-3 sm:gap-5">
                     <!-- Action Buttons - Hidden on mobile, icons only on tablet -->
                     <div class="hidden sm:flex items-center gap-2">
-                        <Dropdown align="right" width="80">
+                        <Dropdown align="right" width="96">
                             <template #trigger>
-                                <button class="p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-all relative group">
-                                    <Bell class="h-5 w-5 group-hover:rotate-12 transition-transform" />
-                                    <span v-if="unreadCount > 0" class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-admin-modern rounded-full ring-2 ring-admin-main"></span>
+                                <button class="p-2.5 text-zinc-500 hover:text-white hover:bg-white/5 rounded-xl transition-all relative group border border-white/5">
+                                    <Bell class="h-4.5 w-4.5 group-hover:rotate-12 transition-transform" />
+                                    <span v-if="unreadCount > 0" class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-admin-modern rounded-full ring-2 ring-admin-main shadow-[0_0_10px_rgba(229,255,69,0.5)]"></span>
                                 </button>
                             </template>
                             <template #content>
-                                <div class="p-4 border-b border-white/5 flex items-center justify-between">
-                                    <h4 class="text-xs font-black uppercase tracking-widest text-white">Notifications</h4>
-                                    <button v-if="unreadCount > 0" @click="markAllAsRead" class="text-[9px] font-black text-admin-modern uppercase hover:underline">Mark all as read</button>
-                                </div>
-                                <div class="max-h-80 overflow-y-auto custom-scrollbar">
-                                    <div v-if="notifications.length === 0" class="p-8 text-center">
-                                        <Bell class="w-8 h-8 text-zinc-800 mx-auto mb-2" />
-                                        <p class="text-[10px] font-black text-zinc-600 uppercase">No new alerts</p>
+                                <div class="bg-black/90 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
+                                    <div class="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                                        <div>
+                                            <h4 class="text-xs font-black uppercase tracking-[0.2em] text-white">Alert Center</h4>
+                                            <p class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">{{ unreadCount }} Unread Messages</p>
+                                        </div>
+                                        <button v-if="unreadCount > 0" @click="markAllAsRead" class="text-[9px] font-black text-admin-modern uppercase tracking-widest hover:text-white transition-colors">Mark Read</button>
                                     </div>
-                                    <div 
-                                        v-for="notification in notifications" 
-                                        :key="notification.id" 
-                                        @click="markAsRead(notification.id)"
-                                        class="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group"
-                                        :class="{'bg-white/[0.02]': !notification.read_at}"
-                                    >
-                                        <div class="flex gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-admin-modern/10 flex items-center justify-center shrink-0">
-                                                <ShoppingCart v-if="notification.data.type === 'order'" class="w-4 h-4 text-admin-modern" />
-                                                <Bell v-else class="w-4 h-4 text-admin-modern" />
+
+                                    <div class="max-h-[450px] overflow-y-auto custom-scrollbar">
+                                        <div v-if="notifications.length === 0" class="py-20 text-center">
+                                            <div class="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
+                                                <Bell class="w-5 h-5 text-zinc-700" />
                                             </div>
-                                            <div class="flex-1">
-                                                <p class="text-xs font-bold text-white group-hover:text-admin-modern transition-colors">
-                                                    {{ notification.data.message }}
-                                                </p>
-                                                <p class="text-[10px] text-zinc-500 mt-0.5">
-                                                    {{ notification.created_at_human || 'Just now' }} 
-                                                    <span v-if="notification.data.amount">• €{{ notification.data.amount }}</span>
-                                                </p>
+                                            <p class="text-[10px] font-black text-zinc-600 uppercase tracking-widest">System Clear</p>
+                                        </div>
+
+                                        <div 
+                                            v-for="notification in notifications" 
+                                            :key="notification.id" 
+                                            @click="markAsRead(notification.id)"
+                                            class="p-5 border-b border-white/5 hover:bg-white/[0.03] transition-all cursor-pointer group relative"
+                                            :class="{'bg-white/[0.01]': !notification.read_at}"
+                                        >
+                                            <div v-if="!notification.read_at" class="absolute left-0 top-0 bottom-0 w-0.5 bg-admin-modern shadow-[0_0_10px_rgba(229,255,69,0.5)]"></div>
+                                            
+                                            <div class="flex gap-4">
+                                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
+                                                     :class="notification.data.type === 'order' ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-admin-modern/10 border border-admin-modern/20'">
+                                                    <ShoppingCart v-if="notification.data.type === 'order'" class="w-4.5 h-4.5 text-emerald-400" />
+                                                    <Bell v-else class="w-4.5 h-4.5 text-admin-modern" />
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-[11px] font-black text-zinc-300 group-hover:text-white transition-colors leading-relaxed">
+                                                        {{ notification.data.message }}
+                                                    </p>
+                                                    <div class="flex items-center gap-2 mt-1.5">
+                                                        <span class="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">{{ notification.created_at_human || 'Just now' }}</span>
+                                                        <template v-if="notification.data.amount">
+                                                            <span class="text-[8px] text-zinc-800">•</span>
+                                                            <span class="text-[9px] font-black text-emerald-400">€{{ notification.data.amount }}</span>
+                                                        </template>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div v-if="!notification.read_at" class="w-1.5 h-1.5 bg-admin-modern rounded-full mt-1.5"></div>
                                         </div>
                                     </div>
+
+                                    <Link :href="route('admin.orders.index')" class="block p-5 text-center text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-admin-modern hover:bg-white/[0.02] transition-all border-t border-white/5">
+                                        View System Logs
+                                    </Link>
                                 </div>
-                                <Link :href="route('admin.orders.index')" class="block p-3 text-center text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors">
-                                    View all activity
-                                </Link>
                             </template>
                         </Dropdown>
                     </div>

@@ -70,96 +70,117 @@ watch(isFilterDrawerOpen, (val) => {
             <div class="lg:hidden flex items-center justify-between mb-8 sticky top-24 z-30 bg-black/80 backdrop-blur-xl p-4 rounded-3xl border border-white/5">
                 <button 
                     @click="isFilterDrawerOpen = true"
-                    class="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-xl text-[10px] font-black uppercase tracking-widest"
+                    class="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all"
                 >
-                    <Filter class="w-4 h-4" />
+                    <Filter class="w-3.5 h-3.5" />
                     Filters
                 </button>
                 
-                <div class="flex items-center gap-2">
-                    <span class="text-[8px] font-black uppercase text-zinc-500 tracking-widest">Sort:</span>
-                    <select 
-                        v-model="activeFilters.sort" 
-                        class="bg-transparent border-none text-[10px] font-black uppercase tracking-widest focus:ring-0 text-white p-0"
-                    >
-                        <option value="featured">Featured</option>
-                        <option value="newest">Newest</option>
-                        <option value="price_low">Price ↑</option>
-                        <option value="price_high">Price ↓</option>
-                    </select>
+                <div class="flex items-center gap-4">
+                    <span class="text-[8px] font-black uppercase text-zinc-500 tracking-[0.3em]">Sort</span>
+                    <div class="relative group">
+                        <select 
+                            v-model="activeFilters.sort" 
+                            class="appearance-none !bg-none bg-zinc-900 border border-white/5 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest focus:ring-1 focus:ring-white/10 text-white pr-10 cursor-pointer"
+                        >
+                            <option value="featured">Featured</option>
+                            <option value="newest">Newest</option>
+                            <option value="price_low">Price ↑</option>
+                            <option value="price_high">Price ↓</option>
+                        </select>
+                        <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500 pointer-events-none" />
+                    </div>
                 </div>
             </div>
 
-            <div class="flex flex-col lg:flex-row gap-8 xl:gap-12">
+            <div class="flex flex-col lg:flex-row gap-8 xl:gap-16">
                 <!-- Desktop Sidebar Filters -->
-                <aside class="hidden lg:block w-72 flex-shrink-0 space-y-12 sticky top-40 h-fit">
+                <aside class="hidden lg:block w-72 flex-shrink-0 space-y-16 sticky top-40 h-fit">
                     <div>
-                        <h3 class="text-3xl font-black uppercase italic tracking-tighter mb-8">Filters</h3>
+                        <div class="flex items-end gap-3 mb-10">
+                            <h3 class="text-4xl font-black uppercase italic tracking-tighter leading-none">Filters</h3>
+                            <div class="h-1 w-10 bg-admin-modern mb-1 shadow-[0_0_15px_rgba(229,255,69,0.4)]"></div>
+                        </div>
                         
                         <!-- Categories -->
-                        <div class="space-y-6 mb-12">
-                            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Categories</h4>
-                            <div class="space-y-3">
+                        <div class="space-y-8 mb-16">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-700">Collection</h4>
+                            </div>
+                            <div class="space-y-4">
                                 <button 
                                     @click="activeFilters.category = ''; applyFilters()"
-                                    :class="activeFilters.category === '' ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'"
-                                    class="flex items-center justify-between w-full text-xs font-black uppercase tracking-widest transition-all"
+                                    class="group flex items-center justify-between w-full text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300"
+                                    :class="activeFilters.category === '' ? 'text-white translate-x-2' : 'text-zinc-600 hover:text-zinc-400'"
                                 >
-                                    All Categories
-                                    <Check v-if="activeFilters.category === ''" class="w-3 h-3" />
+                                    <span class="flex items-center gap-3">
+                                        <div v-if="activeFilters.category === ''" class="w-1.5 h-1.5 bg-admin-modern rounded-full shadow-[0_0_10px_rgba(229,255,69,0.5)]"></div>
+                                        All Styles
+                                    </span>
+                                    <span class="text-[8px] opacity-20 group-hover:opacity-40">→</span>
                                 </button>
                                 <button 
                                     v-for="category in categories" 
                                     :key="category.id"
                                     @click="activeFilters.category = category.name; applyFilters()"
-                                    :class="activeFilters.category === category.name ? 'text-white' : 'text-zinc-600 hover:text-zinc-400'"
-                                    class="flex items-center justify-between w-full text-xs font-black uppercase tracking-widest transition-all"
+                                    class="group flex items-center justify-between w-full text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300"
+                                    :class="activeFilters.category === category.name ? 'text-white translate-x-2' : 'text-zinc-600 hover:text-zinc-400'"
                                 >
-                                    {{ category.name }}
-                                    <Check v-if="activeFilters.category === category.name" class="w-3 h-3" />
+                                    <span class="flex items-center gap-3">
+                                        <div v-if="activeFilters.category === category.name" class="w-1.5 h-1.5 bg-admin-modern rounded-full shadow-[0_0_10px_rgba(229,255,69,0.5)]"></div>
+                                        {{ category.name }}
+                                    </span>
+                                    <span class="text-[8px] opacity-20 group-hover:opacity-40">→</span>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Brands -->
-                        <div class="space-y-6 mb-12">
-                            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Featured Brands</h4>
-                            <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-8 mb-16">
+                            <h4 class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-700">The Houses</h4>
+                            <div class="grid grid-cols-2 gap-4">
                                 <button 
                                     v-for="brand in brands" 
                                     :key="brand.id"
                                     @click="activeFilters.brand = brand.name; applyFilters()"
-                                    :class="activeFilters.brand === brand.name ? 'border-white bg-white/10 shadow-lg shadow-white/5' : 'border-white/5 hover:border-white/20'"
-                                    class="border p-4 rounded-2xl transition-all group aspect-square flex items-center justify-center p-6"
+                                    :class="activeFilters.brand === brand.name ? 'border-white bg-white/[0.03] shadow-2xl shadow-white/5 scale-95' : 'border-white/5 hover:border-white/10 bg-zinc-900/20'"
+                                    class="border p-5 rounded-[2rem] transition-all duration-500 group aspect-square flex items-center justify-center relative overflow-hidden"
                                 >
-                                    <img :src="brand.logo" class="w-full h-full object-contain transition-all" :class="activeFilters.brand === brand.name ? 'opacity-100 grayscale-0' : 'opacity-40 grayscale group-hover:opacity-80'" />
+                                    <div v-if="activeFilters.brand === brand.name" class="absolute top-2 right-2 w-1.5 h-1.5 bg-admin-modern rounded-full"></div>
+                                    <img :src="brand.logo" class="w-full h-full object-contain transition-all duration-700 brightness-200" :class="activeFilters.brand === brand.name ? 'opacity-100' : 'opacity-20 grayscale group-hover:opacity-50 group-hover:grayscale-0'" />
                                 </button>
                             </div>
                             <button 
                                 v-if="activeFilters.brand"
                                 @click="activeFilters.brand = ''; applyFilters()"
-                                class="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-white"
+                                class="w-full py-3 bg-zinc-900/50 rounded-xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 hover:text-white border border-white/5 transition-all"
                             >
-                                Clear Selection
+                                Reset Brands
                             </button>
                         </div>
 
                         <!-- Price Range -->
-                        <div class="space-y-6">
-                            <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Price Range</h4>
-                            <div class="space-y-4">
-                                <div class="flex gap-2">
-                                    <div class="relative flex-1">
-                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-600">€</span>
-                                        <input type="number" v-model="activeFilters.min_price" placeholder="Min" class="w-full bg-zinc-900/50 border-white/5 rounded-xl py-3 pl-7 pr-3 text-xs font-bold text-white focus:ring-1 focus:ring-white/10" />
+                        <div class="space-y-8">
+                            <h4 class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-700">Valuation</h4>
+                            <div class="space-y-6">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="space-y-2">
+                                        <span class="text-[8px] font-black text-zinc-800 uppercase tracking-widest ml-1">Minimum</span>
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-zinc-700 italic">€</span>
+                                            <input type="number" v-model="activeFilters.min_price" class="w-full bg-black/40 border-white/5 rounded-2xl py-4 pl-8 pr-4 text-xs font-black text-white focus:ring-1 focus:ring-white/10 transition-all" />
+                                        </div>
                                     </div>
-                                    <div class="relative flex-1">
-                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-600">€</span>
-                                        <input type="number" v-model="activeFilters.max_price" placeholder="Max" class="w-full bg-zinc-900/50 border-white/5 rounded-xl py-3 pl-7 pr-3 text-xs font-bold text-white focus:ring-1 focus:ring-white/10" />
+                                    <div class="space-y-2">
+                                        <span class="text-[8px] font-black text-zinc-800 uppercase tracking-widest ml-1">Maximum</span>
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-zinc-700 italic">€</span>
+                                            <input type="number" v-model="activeFilters.max_price" class="w-full bg-black/40 border-white/5 rounded-2xl py-4 pl-8 pr-4 text-xs font-black text-white focus:ring-1 focus:ring-white/10 transition-all" />
+                                        </div>
                                     </div>
                                 </div>
-                                <button @click="applyFilters" class="w-full bg-zinc-800 text-white py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">
-                                    Update Range
+                                <button @click="applyFilters" class="w-full bg-white text-black py-5 rounded-[2rem] font-black uppercase text-[10px] tracking-[0.3em] hover:bg-admin-modern transition-all shadow-2xl active:scale-95">
+                                    Filter Results
                                 </button>
                             </div>
                         </div>
@@ -171,26 +192,33 @@ watch(isFilterDrawerOpen, (val) => {
                     <!-- Desktop Header -->
                     <div class="hidden lg:flex justify-between items-end mb-16">
                         <div>
-                            <h2 class="text-7xl font-black uppercase italic tracking-tighter leading-none mb-4">The Collection</h2>
-                            <div class="flex items-center gap-4">
-                                <span class="bg-white text-black px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">{{ products.total }} Items</span>
-                                <div class="h-px w-20 bg-white/10"></div>
+                            <h2 class="text-8xl font-black uppercase italic tracking-tighter leading-none mb-6">The Vault</h2>
+                            <div class="flex items-center gap-6">
+                                <span class="bg-white text-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl">{{ products.total }} Silhouettes</span>
+                                <div class="h-[1px] w-32 bg-white/5"></div>
                             </div>
                         </div>
                         
-                        <div class="flex items-center space-x-6">
-                            <div class="flex items-center bg-zinc-900/50 rounded-full p-1 border border-white/5">
-                                <button class="p-2 text-white bg-white/10 rounded-full"><LayoutGrid class="w-4 h-4" /></button>
-                                <button class="p-2 text-zinc-600 hover:text-zinc-400"><Filter class="w-4 h-4" /></button>
-                            </div>
+                        <div class="flex items-center gap-8 bg-zinc-900/30 backdrop-blur-xl rounded-full py-3 px-8 border border-white/5">
                             <div class="flex items-center gap-3">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-600">Sort:</span>
-                                <select v-model="activeFilters.sort" class="bg-transparent border-none text-[10px] font-black uppercase tracking-widest focus:ring-0 cursor-pointer text-white p-0">
-                                    <option value="featured">Featured Items</option>
-                                    <option value="newest">New Arrivals</option>
-                                    <option value="price_low">Price: Low - High</option>
-                                    <option value="price_high">Price: High - Low</option>
-                                </select>
+                                <span class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600">Sort By:</span>
+                                <div class="relative group">
+                                    <select 
+                                        v-model="activeFilters.sort" 
+                                        class="appearance-none !bg-none bg-transparent border-none text-[10px] font-black uppercase tracking-[0.3em] focus:ring-0 cursor-pointer text-white p-0 pr-6"
+                                    >
+                                        <option value="featured" class="bg-zinc-900 text-white">Featured</option>
+                                        <option value="newest" class="bg-zinc-900 text-white">New Arrivals</option>
+                                        <option value="price_low" class="bg-zinc-900 text-white">Price Low</option>
+                                        <option value="price_high" class="bg-zinc-900 text-white">Price High</option>
+                                    </select>
+                                    <ChevronDown class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500 pointer-events-none group-hover:text-white transition-colors" />
+                                </div>
+                            </div>
+                            <div class="h-4 w-px bg-white/10"></div>
+                            <div class="flex items-center gap-2">
+                                <button class="p-2 text-white bg-white/5 rounded-full border border-white/10"><LayoutGrid class="w-3.5 h-3.5" /></button>
+                                <button class="p-2 text-zinc-600 hover:text-zinc-300 transition-colors"><Filter class="w-3.5 h-3.5" /></button>
                             </div>
                         </div>
                     </div>

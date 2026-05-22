@@ -61,9 +61,17 @@ onMounted(() => {
                         
                         <!-- Header: Brand & Wishlist -->
                         <div class="absolute top-8 left-8 sm:top-14 sm:left-14 z-30">
-                            <template v-if="heroProducts[currentHeroIndex].brands?.length > 0">
-                                <img :src="heroProducts[currentHeroIndex].brands[0].logo" class="h-6 sm:h-9 w-auto object-contain opacity-90 brightness-200" />
-                            </template>
+                            <div class="flex items-center gap-3 sm:gap-5">
+                                <template v-if="heroProducts[currentHeroIndex].brands?.length > 0">
+                                    <template v-for="(brand, bIdx) in heroProducts[currentHeroIndex].brands" :key="brand.id">
+                                        <div class="w-16 h-8 sm:w-24 sm:h-12 flex items-center justify-center">
+                                            <img :src="brand.logo" class="max-w-full max-h-full object-contain opacity-90 brightness-200" />
+                                        </div>
+                                        <!-- Add an 'x' separator between brands if there's more than one -->
+                                        <span v-if="bIdx < heroProducts[currentHeroIndex].brands.length - 1" class="text-white/20 font-black italic text-xs sm:text-sm shrink-0">x</span>
+                                    </template>
+                                </template>
+                            </div>
                         </div>
 
                         <div class="absolute top-8 right-8 sm:top-14 sm:right-14 z-30">
@@ -290,7 +298,7 @@ onMounted(() => {
                             <Star class="w-3 h-3 text-admin-modern" />
                             Our Heritage
                         </div>
-                        <h2 class="text-6xl sm:text-8xl font-black uppercase italic tracking-tighter leading-[0.85] text-white">
+                        <h2 class="text-4xl sm:text-6xl font-black uppercase italic tracking-tighter leading-[0.85] text-white">
                             {{ aboutUs?.title_line_1 || 'Unapologetic' }} <br />
                             <span class="text-zinc-800">{{ aboutUs?.title_line_2 || 'Performance' }}</span>
                         </h2>
